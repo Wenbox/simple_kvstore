@@ -8,27 +8,18 @@
 
 #include <vector>
 
-class message {
-public:
-
-    enum tag : char
-    {
-
+enum message_tag : char {
+        //reply
+        OK = 0,
+        NOT_FOUND,
+        UNKNOWN_OP,
+        ILLEGAL_PARA,
+        ERROR,
         //request
         PUT = 'a',
         GET,
         DELETE,
         SCAN,
-        NOT_FOUND,
-        UNKNOWN_OP,
-        ERROR
-
-
-    };
-
-    tag get_tag();
-private:
-    tag m_tag;
 };
 
 

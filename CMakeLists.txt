@@ -14,9 +14,9 @@ include_directories(./libs/asio-1.16.1/include)
 
 set(SERVER_SOURCE_FILES
         src/server.cpp
-        src/server.cpp src/message.cpp )
+        src/server.cpp  src/request_session.cpp )
 set(CLIENT_SOURCE_FILES
-        src/client.cpp src/message.cpp)
+        src/client.cpp )
 #configure_file(config.txt ${CMAKE_CURRENT_BINARY_DIR}/bin/config.txt COPYONLY)
 
 add_executable(server ${SERVER_SOURCE_FILES})

@@ -9,7 +9,7 @@
 #include <asio/detail/array.hpp>
 #include <asio.hpp>
 #include <thread>
-#include <message.h>
+#include <message_tag.h>
 
 using asio::ip::tcp;
 asio::io_context io_context;
@@ -19,11 +19,13 @@ void mysend(int id)
    tcp::resolver resolver(io_context);
         tcp::resolver::results_type endpoints = resolver.resolve(host, "1313");
         tcp::socket socket(io_context);
-        for(int i = 0; i < 100; ++i) {
+        for(int i = 0; i < 100 ; ++i) {
             asio::connect(socket, endpoints);
 
+            if(id == -1)
+                std::this_thread::sleep_for(std::chrono::seconds(5));
             std::string msg(265, 'a' + i % 26);
-            msg[0] = message::PUT;
+            msg[0] = message_tag::PUT;
             msg[1] = 'A' + id %26;
             msg[2] = 'A' + (id / 26) % 26;
             msg[3] = 'A' + i % 26;
@@ -33,8 +35,7 @@ void mysend(int id)
             asio::error_code ignored;
             asio::write(socket, asio::buffer(msg), ignored);
 
-            for (;;) {
-                asio::detail::array<char, 128> buf;
+                asio::detail::array<char, 1> buf;
                 asio::error_code error;
                 size_t len = socket.read_some(asio::buffer(buf), error);
                 if (error == asio::error::eof)
@@ -42,10 +43,10 @@ void mysend(int id)
                 else if (error)
                     throw asio::system_error(error); // Some other error.
 
-                std::cout << id << " : ";
-                std::cout.write(buf.data(), len);
-            }
-            std::cout << "\n";
+                if(len == 1 && buf.data()[0] == message_tag::OK)
+                    std::cout << id << " PUT success\n";
+                else
+                    std::cout << id << " ERROR\n";
 
         }
 
@@ -53,7 +54,7 @@ void mysend(int id)
             asio::connect(socket, endpoints);
 
             std::string msg(17, 'a' + i % 26);
-            msg[0] = message::SCAN;
+            msg[0] = message_tag::SCAN;
             for(int offset = 1; offset < 9; ++offset) {
                 msg[offset] = 0;
                 msg[offset + 8] = 127;
@@ -63,7 +64,7 @@ void mysend(int id)
             std::cout << id << " received: ";
             int l = 0;
             for (;;) {
-                asio::detail::array<char, 128> buf;
+                asio::detail::array<char, 8192> buf;
                 asio::error_code error;
                 size_t len = socket.read_some(asio::buffer(buf), error);
                 l += len;
@@ -88,7 +89,7 @@ int main(int argc, char* argv[])
         }
         host = argv[1];
         std::vector<std::thread> threads;
-        for(int i = 1; i <= 1; ++i){
+        for(int i = 0; i < 10; ++i){
             threads.push_back(std::thread(mysend, i));
         }
 

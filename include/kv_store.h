@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "kv_store_config.h"
 
 class kv_store {
 public:
-    enum  {KEY_SIZE = 8, VALUE_SIZE=256};
     std::string get(std::string& key) {
         auto itr = m_map.find(key);
         if(itr == m_map.end())
@@ -21,7 +21,6 @@ public:
     }
     void put(std::string& key, std::string& value) {
         m_map[key] = value;
-        std::cout << "PUT " << key << " : " << value << std::endl;
     }
 
     void erase(std::string& key) {
@@ -34,7 +33,6 @@ public:
         while(itr != m_map.end() && itr->first <= ub) {
             res += itr->first;
             res += itr->second;
-            std::cout << itr->first << " : " << itr->second << std::endl;
             ++itr;
         }
         return res;
