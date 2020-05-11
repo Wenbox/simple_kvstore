@@ -44,7 +44,7 @@ void mysend(int id)
                     throw asio::system_error(error); // Some other error.
 
                 if(len == 1 && buf.data()[0] == message_tag::OK)
-                    std::cout << id << " PUT success\n";
+                    std::cout << "Thread " << id << " PUT success\n";
                 else
                     std::cout << id << " ERROR\n";
 
@@ -61,7 +61,6 @@ void mysend(int id)
             }
             asio::error_code ignored;
             asio::write(socket, asio::buffer(msg), ignored);
-            std::cout << id << " received: ";
             int l = 0;
             for (;;) {
                 asio::detail::array<char, 8192> buf;
@@ -73,9 +72,9 @@ void mysend(int id)
                 else if (error)
                     throw asio::system_error(error); // Some other error.
 
-                std::cout.write(buf.data(), len);
+                //std::cout.write(buf.data(), len);
             }
-            std::cout << "\n" << l << "\n";
+            std::cout << "Thread " << id << " scanned "<< l << " bytes\n";
         }
 }
 int main(int argc, char* argv[])
