@@ -5,18 +5,15 @@
 #ifndef SIMPLE_KVSTORE_MESSAGE_H
 #define SIMPLE_KVSTORE_MESSAGE_H
 
-
-#include <vector>
-
 enum message_tag : char {
         //reply
-        OK = 0,
+        OK,
         NOT_FOUND,
         UNKNOWN_OP,
         ILLEGAL_PARA,
         ERROR,
         //request
-        PUT = 'a',
+        PUT,
         GET,
         DELETE,
         SCAN,

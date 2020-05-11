@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include <stdint.h>
+#include "message_tag.h"
 
 using asio::ip::tcp;
 

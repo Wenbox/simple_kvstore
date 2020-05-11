@@ -2,7 +2,7 @@
 // Created by wxu on 10.05.20.
 //
 
-#include <request_session.h>
+#include "request_session.h"
 
 request_session::pointer request_session::create(asio::io_context &io_context, kv_store &store) {
     return pointer(new request_session(io_context, store));
@@ -105,7 +105,8 @@ void request_session::do_read_body(char tag) {
 void request_session::reply(message_tag t, std::string &msg) {
     std::string reply(1, t);
     reply += msg;
-    m_socket.send(asio::buffer(reply));
+    asio::error_code ec;
+    asio::write(m_socket, asio::buffer(reply), ec);
 }
 
 void request_session::reply(message_tag t) {

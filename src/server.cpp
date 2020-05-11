@@ -15,8 +15,8 @@
 
 using asio::ip::tcp;
 
-server::server(asio::io_context &io_context) : m_io_context(io_context),
-                                               m_acceptor(io_context, tcp::endpoint(tcp::v4(), 1313)) {
+server::server(asio::io_context &io_context, int port) : m_io_context(io_context),
+                                               m_acceptor(io_context, tcp::endpoint(tcp::v4(), port)) {
     start_accept();
 }
 
@@ -37,7 +37,7 @@ void server::handle_accept(request_session::pointer new_connection, const asio::
 int main() {
     try {
         asio::io_context io_context;
-        server server(io_context);
+        server server(io_context, 1313);
         io_context.run();
     }
     catch (std::exception &e) {

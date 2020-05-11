@@ -6,9 +6,9 @@
 #define SIMPLE_KVSTORE_REQUEST_SESSION_H
 
 #include <asio.hpp>
-#include <kv_store.h>
+#include "kv_store.h"
 #include <iostream>
-#include <message_tag.h>
+#include "message_tag.h"
 
 using asio::ip::tcp;
 class request_session: public std::enable_shared_from_this<request_session> {
