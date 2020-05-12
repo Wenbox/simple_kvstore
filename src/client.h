@@ -15,7 +15,7 @@ using asio::ip::tcp;
 
 class client {
 public:
-    client(const std::string& host, const std::string& port);
+    client(const std::string& host);
     std::string get(const std::string& key, message_tag& status);
     void put(const std::string& key, const std::string& value, message_tag& status);
     void erase(const std::string& key, message_tag& status);

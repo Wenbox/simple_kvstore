@@ -16,6 +16,8 @@ int main(int argc, char *argv[]) {
         } else {
             host = std::string(argv[1]);
         }
+        config::initialize_config();
+
         std::vector<std::thread> threads;
         std::vector<double> time_elapsed;
         for (int i = 0; i < 10; ++i) {

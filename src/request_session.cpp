@@ -3,7 +3,7 @@
 //
 
 #include "request_session.h"
-
+#include "config.h"
 request_session::pointer request_session::create(asio::io_context &io_context, kv_store &store) {
     return pointer(new request_session(io_context, store));
 }
@@ -39,8 +39,8 @@ void request_session::do_read_body(char tag) {
         case message_tag::GET:
             m_socket.async_read_some(asio::buffer(m_buffer, MAX_BUFFER_SIZE),
                                     [this, self](asio::error_code ec, std::size_t sz) {
-                                        if (!ec && sz == kv_store_config::KEY_SIZE) {
-                                            std::string key(m_buffer, kv_store_config::KEY_SIZE);
+                                        if (!ec && sz == config::KEY_SIZE) {
+                                            std::string key(m_buffer, config::KEY_SIZE);
                                             std::string value = m_store.get(key);
                                             if (!value.empty())
                                                 reply(message_tag::OK, value);
@@ -56,9 +56,9 @@ void request_session::do_read_body(char tag) {
         case message_tag::PUT:
             m_socket.async_read_some(asio::buffer(m_buffer, MAX_BUFFER_SIZE),
                                     [this, self](asio::error_code ec, std::size_t sz) {
-                                        if (!ec && sz == kv_store_config::KEY_SIZE + kv_store_config::VALUE_SIZE) {
-                                            std::string key(m_buffer, kv_store_config::KEY_SIZE);
-                                            std::string value(m_buffer + kv_store_config::KEY_SIZE, kv_store_config::VALUE_SIZE);
+                                        if (!ec && sz == config::KEY_SIZE + config::VALUE_SIZE) {
+                                            std::string key(m_buffer, config::KEY_SIZE);
+                                            std::string value(m_buffer + config::KEY_SIZE, config::VALUE_SIZE);
                                             try {
                                                 m_store.put(key, value);
                                             } catch (...) {
@@ -76,8 +76,8 @@ void request_session::do_read_body(char tag) {
         case message_tag::DELETE:
             m_socket.async_read_some(asio::buffer(m_buffer, MAX_BUFFER_SIZE),
                                     [this, self](asio::error_code ec, std::size_t sz) {
-                                        if (!ec && sz == kv_store_config::KEY_SIZE) {
-                                            std::string key(m_buffer, kv_store_config::KEY_SIZE);
+                                        if (!ec && sz == config::KEY_SIZE) {
+                                            std::string key(m_buffer, config::KEY_SIZE);
                                             try {
                                                 m_store.erase(key);
                                             } catch (...) {
@@ -96,9 +96,9 @@ void request_session::do_read_body(char tag) {
         case message_tag::SCAN:
             m_socket.async_read_some(asio::buffer(m_buffer, MAX_BUFFER_SIZE),
                                     [this, self](asio::error_code ec, std::size_t sz) {
-                                        if (!ec && sz == 2 * kv_store_config::KEY_SIZE) {
-                                            std::string lb(m_buffer, kv_store_config::KEY_SIZE);
-                                            std::string ub(m_buffer + kv_store_config::KEY_SIZE, kv_store_config::KEY_SIZE);
+                                        if (!ec && sz == 2 * config::KEY_SIZE) {
+                                            std::string lb(m_buffer, config::KEY_SIZE);
+                                            std::string ub(m_buffer + config::KEY_SIZE, config::KEY_SIZE);
                                             std::string res = m_store.scan(lb, ub);
                                             reply(message_tag::OK, res);
                                         } else if(!ec){

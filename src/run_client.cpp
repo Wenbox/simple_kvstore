@@ -4,9 +4,10 @@
 #include <iostream>
 #include "client.h"
 #include "kv_store_config.h"
+#include "config.h"
 
 void run_client(std::string& host) {
-    client c(host, std::to_string(kv_store_config::PORT));
+    client c(host);
     std::vector<std::string> keys;
     for(int i = 0; i < 26; ++i) {
         keys.push_back(std::string(8, 'a' + i));
@@ -89,6 +90,7 @@ int main(int argc, char *argv[]) {
         } else {
             host = std::string(argv[1]);
         }
+        config::initialize_config();
         run_client(host);
 
     }

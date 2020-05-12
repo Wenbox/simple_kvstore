@@ -16,9 +16,9 @@ FOREACH(dir ${dirs})
     ENDIF(NOT EXISTS ${dir})
 ENDFOREACH(dir)
 set(SERVER_SOURCE_FILES
-        src/server.cpp  src/request_session.cpp src/kv_store_config.cpp)
+        src/server.cpp  src/request_session.cpp src/config.cpp src/config.h)
 set(CLIENT_SOURCE_FILES
-        src/client.cpp src/run_client.cpp src/kv_store_config.cpp)
+        src/client.cpp src/run_client.cpp src/config.cpp src/config.h)
 #configure_file(config.txt ${CMAKE_CURRENT_BINARY_DIR}/bin/config.txt COPYONLY)
 
 add_executable(server ${SERVER_SOURCE_FILES})

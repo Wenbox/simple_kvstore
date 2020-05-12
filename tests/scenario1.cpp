@@ -5,11 +5,12 @@
 #include <iostream>
 #include <thread>
 #include <kv_store_config.h>
+#include <config.h>
 #include "client.h"
 #include "stopwatch.h"
 
 void run_testcase_1(std::string &host) {
-    client c(host, std::to_string(kv_store_config::PORT));
+    client c(host);
     int num_of_keys = 10000;
     stopwatch timer;
     //construct key sets for test
@@ -135,6 +136,7 @@ int main(int argc, char *argv[]) {
         } else {
             host = std::string(argv[1]);
         }
+        config::initialize_config();
 
         std::cout << "Test single benign client\n";
         run_testcase_1(host);

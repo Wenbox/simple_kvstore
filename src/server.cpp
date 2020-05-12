@@ -11,7 +11,7 @@
 #include "message_tag.h"
 #include "request_session.h"
 #include "server.h"
-
+#include "config.h"
 
 using asio::ip::tcp;
 
@@ -39,8 +39,9 @@ void server::handle_accept(request_session::pointer new_connection, const asio::
 
 int main() {
     try {
+        config::initialize_config();
         asio::io_context io_context;
-        server server(io_context, kv_store_config::PORT);
+        server server(io_context, config::PORT());
         io_context.run();
     }
     catch (std::exception &e) {

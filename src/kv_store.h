@@ -10,11 +10,11 @@
 #include <iostream>
 #include <map>
 #include <fstream>
-#include "kv_store_config.h"
+#include "config.h"
 
 class kv_store {
 public:
-    kv_store() : m_enable_persistency(kv_store_config::ENABLE_PERSISTENCE) {
+    kv_store() : m_enable_persistency(config::ENABLE_PERSISTENCE()) {
         if(m_enable_persistency) {
             restore_from_log();
         }
@@ -31,7 +31,7 @@ public:
        if(m_enable_persistency) {
             try{
                 std::ofstream outfile;
-                outfile.open(kv_store_config::PERSISTENCE_FILE, std::ios_base::app);
+                outfile.open(config::BACKUP_FILE(), std::ios_base::app);
                 outfile << "p" << key << value;
                 outfile.close();
 
@@ -48,7 +48,7 @@ public:
             if (m_enable_persistency) {
                 try {
                     std::ofstream outfile;
-                    outfile.open(kv_store_config::PERSISTENCE_FILE, std::ios_base::app);
+                    outfile.open(config::BACKUP_FILE(), std::ios_base::app);
                     outfile << "d" << key;
                     outfile.close();
 
@@ -74,19 +74,19 @@ public:
 private:
     void restore_from_log() {
         try {
-            std::cout << "Restoring kv-store from " << kv_store_config::PERSISTENCE_FILE << std::endl;
-            std::ifstream infile(kv_store_config::PERSISTENCE_FILE, std::ifstream::binary);
+            std::cout << "Restoring kv-store from " << config::BACKUP_FILE() << std::endl;
+            std::ifstream infile(config::BACKUP_FILE(), std::ifstream::binary);
 
             std::vector<char> buffer(256, 0);
             while(infile.read(buffer.data(), 1)) {
                 if(buffer[0] == 'p') {
-                    infile.read(buffer.data(), kv_store_config::KEY_SIZE);
-                    std::string key(buffer.begin(), buffer.begin() + kv_store_config::KEY_SIZE);
-                    infile.read(buffer.data(), kv_store_config::VALUE_SIZE);
-                    m_map[key] = std::string(buffer.begin(), buffer.begin() + kv_store_config::VALUE_SIZE);
+                    infile.read(buffer.data(), config::KEY_SIZE);
+                    std::string key(buffer.begin(), buffer.begin() + config::KEY_SIZE);
+                    infile.read(buffer.data(), config::VALUE_SIZE);
+                    m_map[key] = std::string(buffer.begin(), buffer.begin() + config::VALUE_SIZE);
                 } else if(buffer[0] == 'd') {
-                    infile.read(buffer.data(), kv_store_config::KEY_SIZE);
-                    std::string key(buffer.begin(), buffer.begin() + kv_store_config::KEY_SIZE);
+                    infile.read(buffer.data(), config::KEY_SIZE);
+                    std::string key(buffer.begin(), buffer.begin() + config::KEY_SIZE);
                     m_map.erase(key);
                 } else {
                     throw 13;

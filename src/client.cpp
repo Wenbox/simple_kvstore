@@ -12,10 +12,12 @@
 #include "kv_store_config.h"
 #include "message_tag.h"
 #include "client.h"
+#include "config.h"
 
-client::client(const std::string &host, const std::string &port) :
+client::client(const std::string &host) :
         m_io_context(), m_inbound(8192){
     try {
+        std::string port = std::to_string(config::PORT());
         tcp::resolver resolver = tcp::resolver(m_io_context);
         m_endpoint = resolver.resolve(host, port);
     } catch (const asio::system_error &ex) {
