@@ -6,10 +6,15 @@ set( CMAKE_CXX_FLAGS "-Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 find_package(Threads)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-include_directories(./libs/asio/include)
-include_directories(src)
+include_directories(${CMAKE_SOURCE_DIR}/libs/asio/include)
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
-
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+FOREACH(dir ${dirs})
+    IF(NOT EXISTS ${dir})
+        message(SEND_ERROR "directory '" ${dir} "' does not exist.")
+    ENDIF(NOT EXISTS ${dir})
+ENDFOREACH(dir)
 set(SERVER_SOURCE_FILES
         src/server.cpp  src/request_session.cpp )
 set(CLIENT_SOURCE_FILES

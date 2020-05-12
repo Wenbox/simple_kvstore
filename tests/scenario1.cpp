@@ -8,14 +8,14 @@
 #include "client.h"
 #include "stopwatch.h"
 
-void run_testcase_1(std::string& host) {
+void run_testcase_1(std::string &host) {
     client c(host, "1313");
     int num_of_keys = 10000;
     stopwatch timer;
     //construct key sets for test
     std::vector<std::string> keys;
     std::vector<std::string> values;
-    for(int i = 0; i < num_of_keys; ++i) {
+    for (int i = 0; i < num_of_keys; ++i) {
         std::string key = std::to_string(i);
         key = std::string(8 - key.size(), '0') + key;
         keys.push_back(key);
@@ -24,46 +24,46 @@ void run_testcase_1(std::string& host) {
     message_tag status;
 
     //make sure the keys for testing are cleared
-    for(auto& key : keys) {
+    for (auto &key : keys) {
         c.erase(key, status);
-        if(status != message_tag::OK)//something wrong
+        if (status != message_tag::OK)//something wrong
         {
             std::cerr << "Connection failure, abort!\n";
             return;
         }
     }
 
-    //test get non-existed keys
+    std::cout << "test GET non-existed keys\n";
     timer.start();
-    for(auto& key : keys) {
+    for (auto &key : keys) {
         auto response = c.get(key, status);
         assert(status == message_tag::NOT_FOUND && response.empty());
     }
     timer.stop();
-    std::cout << "get " << num_of_keys <<" non-existing keys in " << timer.elapsed() << " seconds\n" ;
+    std::cout << "\tget " << num_of_keys << " non-existing keys in " << timer.elapsed() << " seconds\n";
 
-    //test put
+    std::cout << "test PUT\n";
     timer.reset();
     timer.start();
-    for(int i = 0; i < num_of_keys; ++i) {
+    for (int i = 0; i < num_of_keys; ++i) {
         c.put(keys[i], values[i], status);
         assert(status == message_tag::OK);
     }
     timer.stop();
-    std::cout << "put " << num_of_keys <<" keys in " << timer.elapsed() << " seconds\n" ;
+    std::cout << "\tput " << num_of_keys << " keys in " << timer.elapsed() << " seconds\n";
 
-    //test get
+    std::cout << "test GET\n";
     timer.reset();
     timer.start();
-    for(auto& key : keys) {
+    for (auto &key : keys) {
         auto response = c.get(key, status);
         assert(status == message_tag::OK);
     }
     timer.stop();
-    std::cout << "get " << num_of_keys <<" keys in " << timer.elapsed() << " seconds\n" ;
+    std::cout << "\tget " << num_of_keys << " keys in " << timer.elapsed() << " seconds\n";
 
 
-    //test scan
+    std::cout << "test SCAN\n";
     {
         timer.reset();
         timer.start();
@@ -71,58 +71,61 @@ void run_testcase_1(std::string& host) {
         timer.stop();
 
         assert(status == message_tag::OK && pairs.size() == keys.size());
-        std::cout << "scan " << pairs.size() <<" keys in " << timer.elapsed() << " seconds\n" ;
+        std::cout << "\tscan " << pairs.size() << " keys in " << timer.elapsed() << " seconds\n";
 
         timer.reset();
         timer.start();
-        pairs = c.scan(*(keys.begin()), *(keys.begin() + 5000), status);
+        pairs = c.scan(*(keys.begin()), *(keys.begin() + keys.size() / 2), status);
         timer.stop();
-        assert(status == message_tag::OK && pairs.size() == 5001);
-        for(size_t i = 0; i < pairs.size(); ++i) {
-            auto& kv = pairs[i];
-            assert(kv.first == *(keys.begin() + i) );
+        assert(status == message_tag::OK && pairs.size() == keys.size() / 2 + 1);
+        for (size_t i = 0; i < pairs.size(); ++i) {
+            auto &kv = pairs[i];
+            assert(kv.first == *(keys.begin() + i));
         }
         timer.stop();
-        std::cout << "scan " << pairs.size() <<" keys in " << timer.elapsed() << " seconds\n" ;
+        std::cout << "\tscan " << pairs.size() << " keys in " << timer.elapsed() << " seconds\n";
+        pairs = c.scan(keys.back(), keys.front(), status);
+        assert(status == message_tag::OK && pairs.empty());
+        std::cout << "\tscan returns empty in the given range\n";
     }
 
 
-    //test delete
+    std::cout << "test DELETE\n";
     timer.reset();
     timer.start();
-    for(size_t i = 0; i < keys.size(); i += 2) {
+    for (size_t i = 0; i < keys.size(); i += 2) {
         c.erase(keys[i], status);
         assert(status == message_tag::OK);
     }
     timer.stop();
-    std::cout << "delete " << keys.size()/2 << " keys in " << timer.elapsed() << " seconds\n";
+    std::cout << "\tdelete " << keys.size() / 2 << " keys in " << timer.elapsed() << " seconds\n";
 
-    //test get after delete
+    std::cout << "test GET after DELETE\n";
     timer.reset();
     timer.start();
-    for(size_t i = 0; i < keys.size(); ++i) {
+    for (size_t i = 0; i < keys.size(); ++i) {
         auto response = c.get(keys[i], status);
-        if(i % 2 == 0)
+        if (i % 2 == 0)
             assert(status == message_tag::NOT_FOUND && response.empty());
         else
             assert(status == message_tag::OK && response.size() == 256);
     }
     timer.stop();
-    std::cout << "get " << keys.size() << " keys in " << timer.elapsed() << " seconds\n";
+    std::cout << "\tget " << keys.size() << " keys in " << timer.elapsed() << " seconds\n";
 
-    //test scan after delete
+    std::cout << "test SCAN after DELETE\n";
     {
         timer.reset();
         timer.start();
         auto pairs = c.scan(keys.front(), keys.back(), status);
         timer.stop();
         assert(status == message_tag::OK && pairs.size() == keys.size() / 2);
-        std::cout << "scan " << pairs.size() <<" keys in " << timer.elapsed() << " seconds\n" ;
+        std::cout << "\tscan " << pairs.size() << " keys in " << timer.elapsed() << " seconds\n";
     }
-    std::cout << "Passed all tests!\n";
-
 
 }
+
+
 int main(int argc, char *argv[]) {
     try {
         std::string host;
@@ -133,15 +136,10 @@ int main(int argc, char *argv[]) {
             host = std::string(argv[1]);
         }
 
+        std::cout << "Test single benign client\n";
         run_testcase_1(host);
-        /*
-        std::vector<std::thread> threads;
-        for (int i = 0; i < 10; ++i) {
-            threads.push_back(std::thread(run_client, i));
-        }
-        for (auto &th : threads)
-            th.join();
-*/
+
+        std::cout << "Passed all tests\n";
     }
     catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
