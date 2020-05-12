@@ -18,6 +18,7 @@ using asio::ip::tcp;
 server::server(asio::io_context &io_context, int port) : m_io_context(io_context),
                                                m_acceptor(io_context, tcp::endpoint(tcp::v4(), port)) {
     start_accept();
+    std::cout << "Server ready, listening on port " << port << std::endl;
 }
 
 void server::start_accept() {

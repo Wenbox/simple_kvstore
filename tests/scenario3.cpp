@@ -16,7 +16,6 @@ int main(int argc, char *argv[]) {
         } else {
             host = std::string(argv[1]);
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         std::vector<std::thread> threads;
         std::vector<double> time_elapsed;
         for (int i = 0; i < 10; ++i) {
