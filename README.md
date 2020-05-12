@@ -12,7 +12,7 @@ The keys are fixed **8 Bytes**, and the values are fixed **256 Bytes**.
 Requirements:
 - CMake version >= 3.7
 
-1. Checkout repository and submodule (asio): 
+1. Checkout repository and submodule (asio):  
 `git clone --recurse-submodules https://github.com/Wenbox/simple_kvstore.git`<br>
 (earlier version of Git maybe use `--recursive` flag instead of `--recurse-submodules`.
 
