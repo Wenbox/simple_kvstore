@@ -1,12 +1,16 @@
 # simple_kvstore
 
-This is a simple in-memory ordered key-value store server with the following APIs:
-- `get(string key)`: retrive the value of a given key;
-- `put(string key, string value)`: map a value to a given key;
-- `delete(string key)`: delete a specific key, if it exists;
-- `scan(string lower_key, string upper_key)`: return a collection of all key-value pairs, whose keys are between `lower_key` and `upper_key`(inclusive).
-
+This is a simple in-memory ordered key-value store server with the following features:
+- [x] `get(string key)`: retrive the value of a given key;
+- [x] `put(string key, string value)`: map a value to a given key;
+- [x] `delete(string key)`: delete a specific key, if it exists;
+- [x] `scan(string lower_key, string upper_key)`: return a collection of all key-value pairs, whose keys are between `lower_key` and `upper_key`(inclusive).   
 The keys are fixed **8 Bytes**, and the values are fixed **256 Bytes**.
+- [x] The return from SCAN can have a very big size. I tested with 10.000 returned key-value pairs, which is over 2 MB. 
+- [x] data persistence. It is optional, but if you choose it, **be careful that the backup file will grow to unlimited size!**. And checksums is not yet implemented to check the integrity. A corrupted backup file hinder the server from starting up.  
+- [x] Integration tests. Because most functions are web IO functions, it is relatively hard to test, so I decide to directly
+perform integration tests.
+
 
 ## How to build 
 Requirements:
@@ -19,10 +23,30 @@ Requirements:
 `mkdir build && cd build`  
 `cmake ..`   
 `make`   
-3. Start the server:  
+3. Configure the key-value store in **src/kv_store_config.cpp**, including: port number, whether to enable persistency, and the backup file path for persistency.    
+4. Start the server:  
 `./bin/server`   
-4. Start the client for testing:  
+5. Start the client for testing:  
 `./bin/client`
+
+## Overview  
+### Server
+In the backend is the `std::map<string, string>`. I use the standard library as much as possible, and avoid raw pointers and arrays, to keep the code modern styled.
+I used ASIO library to implement the socket and IO. It can used single threaded but work asynchronously.
+Compared to boost::asio, this is a header-only version, so you don't need to compile it. This keeps the dependency to the minimum, and easier to cross platform. I tested the code on both Linux and MacOS.   
+The main logic is inside the **request_session** class. After a client connects with a session, the request_session will 
+read the request, visit the map to get result, and write the results back.
+The read must be asynchronous, otherwise the service might be blocked (see the 3rd testcase below).
+The write is synchronous.   
+### Data persistence  
+Redis has two approaches to do this: append only file and periodic snapshot. The former provides strong consistency but for 
+every PUT/DELETE there must be disk write. Snapshot has better performance, but some data can get lost between two snapshots.
+I decide to choose the append only file solution, but I did not implement the periodic clean up. Which means, the 
+backup file will increase unlimited.   
+### Client
+The client reades and writes to socket both synchronously. The response message to the SCAN request can have a big size, so a loop is necessary 
+until the last byte arrives. 
+
 
 ## Tests and benchmark   
 Both the client and server are running on the same machine with the following specifications:  
@@ -68,3 +92,13 @@ Five client threads are running in parallel, as in **tests/scenario2.cpp**. The 
 In **tests/scenario3.cpp**, besides 5 begnign clients doing the same OPs as before, ther are 5 other faulty clients:   
 * 2 faulty ones send wrong messages, either wrong request tag, or wrong key-value size.
 * 3 faulty ones connect to server and hold without sending anything.    
+
+## What can be further optimized
+* B+ tree might be better for disk storage because of the data persistence issue.   
+* Sharding: as the number of stored keys grow, the search complexity O(log n) is a big overhead. It would be better to shard the key space.  
+* Cache: just another optimization to the above mentioned issue.   
+* Periodically clean up the append-only file used for persistence.   
+* Checksums and authentication for data integrity and security.   
+* Multi-threading: although this will cause race condition, but some non-critical part can benifit from it without locks.
+For example combined with sharding so that every thread take responsibility of one partition. Also some dedicated threads
+dealing with IO is a good choice.
