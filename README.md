@@ -62,3 +62,8 @@ test SCAN after DELETE
 	scan 5000 keys in 0.022083 seconds
 Passed all tests!
 ```
+### Scenario 2: multiple begnign clients  
+Five client threads are running in parallel. The same OPs are performed as in the last testcase:   
+```
+5 clients takes 1.36888 seconds in average.About 65.000 OPs per client.
+```
