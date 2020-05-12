@@ -19,12 +19,13 @@ Requirements:
 1. Checkout repository and submodule (asio):  
 `git clone --recurse-submodules https://github.com/Wenbox/simple_kvstore.git`<br>
 (earlier version of Git maybe use `--recursive` flag instead of `--recurse-submodules`.  
+Go into the downloaded folder.
 2. Using CMake to build:  
 `mkdir build && cd build`  
 `cmake ..`   
 `make`   
-3. Configure the key-value store in **src/kv_store_config.cpp**, including: port number, whether to enable persistency, and the backup file path for persistency.    
-(Yes it is awkward to do it in source code, I should use a config file.)    
+**Make sure that all the following steps are perform in `$(project_root)/build` folder, as this affects the relative paths.**    
+3. Configure the key-value store in **config.txt**, including: port number, whether to enable persistency (yes/no), and the backup file path (relative to `build`) folder for persistence.     
 4. Start the server:  
 `./bin/server`   
 5. Start the client for testing:  
@@ -95,7 +96,6 @@ In **tests/scenario3.cpp**, besides 5 benign clients doing the same OPs as befor
 * 3 faulty ones connect to server and hold without sending anything.    
 
 ## What can be further optimized
-* Config file instead of in source code.   
 * B+ tree might be better for disk storage because of the data persistence issue.   
 * Sharding: as the number of stored keys grow, the search complexity O(log n) is a big overhead. It would be better to shard the key space.  
 * Cache: just another optimization to the above mentioned issue.   
