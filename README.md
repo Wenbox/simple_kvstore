@@ -32,7 +32,7 @@ Both the client and server are running on the same machine with the following sp
 The latency between a request and reply is messured as the metrics.  
 
 ### Scenario 1: single benign client   
-You can find this test case in **tests/scenario.cpp**. A single threaded client performs the following operations consequentially:
+You can find this test case in **tests/scenario1.cpp**. A single threaded client performs the following operations consequentially:
 1. GET 10000 keys from an empty store, should receive NOT_FOUND;   
 2. PUT 10000 keys;   
 3. GET these 10000 keys;   
@@ -63,7 +63,8 @@ test SCAN after DELETE
 Passed all tests!
 ```
 ### Scenario 2: multiple begnign clients  
-Five client threads are running in parallel. The same OPs are performed as in the last testcase:   
-```
-5 clients takes 1.36888 seconds in average.About 65.000 OPs per client.
-```
+Five client threads are running in parallel, as in **tests/scenario2.cpp**. The same OPs are performed as in the last testcase.     
+### Scenario 3: multiple begnign clients and faulty clients
+In **tests/scenario3.cpp**, besides 5 begnign clients doing the same OPs as before, ther are 5 other faulty clients:   
+* 2 faulty ones send wrong messages, either wrong request tag, or wrong key-value size.
+* 3 faulty ones connect to server and hold without sending anything.    
