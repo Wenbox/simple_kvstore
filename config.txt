@@ -1,3 +1,3 @@
 port=10002
-enable_persistent=yes
+enable_persistent=no
 path_to_backup_file=../persistent.txt
