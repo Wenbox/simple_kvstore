@@ -21,12 +21,14 @@ server::server(asio::io_context &io_context, int port) : m_io_context(io_context
     std::cout << "Server ready, listening on port " << port << std::endl;
 }
 
+//create a session and waiting for client connection
 void server::start_accept() {
     request_session::pointer new_connection = request_session::create(m_io_context, m_store);
     m_acceptor.async_accept(new_connection->socket(), std::bind(&server::handle_accept, this,
                                                                 new_connection, std::placeholders::_1));
 }
 
+//let the session to deal with request. Start a new session.
 void server::handle_accept(request_session::pointer new_connection, const asio::error_code &error) {
     if (!error) {
         new_connection->start();

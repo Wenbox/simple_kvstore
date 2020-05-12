@@ -13,7 +13,6 @@ void run_client(std::string& host) {
     }
     message_tag status;
     //make sure the keys for testing are cleared
-    /*
     for(auto& key : keys) {
         c.erase(key, status);
         if(status != message_tag::OK)//something wrong
@@ -22,7 +21,6 @@ void run_client(std::string& host) {
             return;
         }
     }
-     */
 
     //test get non-existed keys
     auto response = c.get(keys[1], status);

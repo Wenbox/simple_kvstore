@@ -16,6 +16,7 @@ void request_session::start() {
     do_read_header();
 }
 
+//read the message tag, denote the requested operation.
 void request_session::do_read_header() {
 
     auto self(shared_from_this());
@@ -31,6 +32,7 @@ void request_session::do_read_header() {
                             });
 }
 
+//read the payload of the request
 void request_session::do_read_body(char tag) {
     auto self(shared_from_this());
     switch (tag) {
@@ -112,6 +114,7 @@ void request_session::do_read_body(char tag) {
     }
 }
 
+//reply to client with payload
 void request_session::reply(message_tag t, std::string &msg) {
     std::string reply(1, t);
     reply += msg;
@@ -119,6 +122,7 @@ void request_session::reply(message_tag t, std::string &msg) {
     asio::write(m_socket, asio::buffer(reply), ec);
 }
 
+//reply without payload
 void request_session::reply(message_tag t) {
     m_buffer[0] = t;
     m_socket.send(asio::buffer(m_buffer, 1));
