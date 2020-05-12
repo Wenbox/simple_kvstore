@@ -1,7 +1,7 @@
 # simple_kvstore
 
 This is a simple in-memory ordered key-value store server with the following features:
-- [x] `get(string key)`: retrive the value of a given key;
+- [x] `get(string key)`: retrieve the value of a given key;
 - [x] `put(string key, string value)`: map a value to a given key;
 - [x] `delete(string key)`: delete a specific key, if it exists;
 - [x] `scan(string lower_key, string upper_key)`: return a collection of all key-value pairs, whose keys are between `lower_key` and `upper_key`(inclusive).   
@@ -24,7 +24,7 @@ Requirements:
 `cmake ..`   
 `make`   
 3. Configure the key-value store in **src/kv_store_config.cpp**, including: port number, whether to enable persistency, and the backup file path for persistency.    
-(Yes it is awkard to do it in source code, I should use a config file.)    
+(Yes it is awkward to do it in source code, I should use a config file.)    
 4. Start the server:  
 `./bin/server`   
 5. Start the client for testing:  
@@ -45,7 +45,7 @@ every PUT/DELETE there must be disk write. Snapshot has better performance, but 
 I decide to choose the append only file solution, but I did not implement the periodic clean up. Which means, the 
 backup file will increase unlimited.   
 ### Client
-The client reades and writes to socket both synchronously. The response message to the SCAN request can have a big size, so a loop is necessary 
+The client reads and writes to socket both synchronously. The response message to the SCAN request can have a big size, so a loop is necessary 
 until the last byte arrives. 
 
 
@@ -54,7 +54,7 @@ Both the client and server are running on the same machine with the following sp
 * OS: Ubuntu 16.04, 64 bit  
 * Memory: 8 GB
 * CPU: Intel Core i5 @ 3.1 GHz * 4   
-The latency between a request and reply is messured as the metrics.  
+The latency between a request and reply is measured as the metrics.  
 
 ### Scenario 1: single benign client   
 You can find this test case in **tests/scenario1.cpp**. A single threaded client performs the following operations consequentially:
@@ -87,10 +87,10 @@ test SCAN after DELETE
 	scan 5000 keys in 0.022083 seconds
 Passed all tests!
 ```
-### Scenario 2: multiple begnign clients  
+### Scenario 2: multiple benign clients  
 Five client threads are running in parallel, as in **tests/scenario2.cpp**. The same OPs are performed as in the last testcase.     
-### Scenario 3: multiple begnign clients and faulty clients
-In **tests/scenario3.cpp**, besides 5 begnign clients doing the same OPs as before, ther are 5 other faulty clients:   
+### Scenario 3: multiple benign clients and faulty clients
+In **tests/scenario3.cpp**, besides 5 benign clients doing the same OPs as before, there are 5 other faulty clients:   
 * 2 faulty ones send wrong messages, either wrong request tag, or wrong key-value size.
 * 3 faulty ones connect to server and hold without sending anything.    
 
@@ -101,6 +101,6 @@ In **tests/scenario3.cpp**, besides 5 begnign clients doing the same OPs as befo
 * Cache: just another optimization to the above mentioned issue.   
 * Periodically clean up the append-only file used for persistence.   
 * Checksums and authentication for data integrity and security.   
-* Multi-threading: although this will cause race condition, but some non-critical part can benifit from it without locks.
+* Multi-threading: although this will cause race condition, but some non-critical part can benefit from it without locks.
 For example combined with sharding so that every thread take responsibility of one partition. Also some dedicated threads
 dealing with IO is a good choice.
