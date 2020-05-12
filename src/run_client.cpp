@@ -3,14 +3,17 @@
 //
 #include <iostream>
 #include "client.h"
-void run_client() {
-    client c("localhost", "1313" );
+#include "kv_store_config.h"
+
+void run_client(std::string& host) {
+    client c(host, std::to_string(kv_store_config::PORT));
     std::vector<std::string> keys;
     for(int i = 0; i < 26; ++i) {
         keys.push_back(std::string(8, 'a' + i));
     }
     message_tag status;
     //make sure the keys for testing are cleared
+    /*
     for(auto& key : keys) {
         c.erase(key, status);
         if(status != message_tag::OK)//something wrong
@@ -19,10 +22,12 @@ void run_client() {
             return;
         }
     }
+     */
 
     //test get non-existed keys
-    auto response = c.get(keys[0], status);
+    auto response = c.get(keys[1], status);
     assert(status == message_tag::NOT_FOUND && response.empty());
+    std::cout << keys[1] << " not found\n";
     std::cout << "passed get0\n";
     //test put
     for(auto& key : keys) {
@@ -86,8 +91,7 @@ int main(int argc, char *argv[]) {
         } else {
             host = std::string(argv[1]);
         }
-        client c(host, "1313");
-        run_client();
+        run_client(host);
 
     }
     catch (std::exception &e) {

@@ -12,9 +12,9 @@ FOREACH(dir ${dirs})
     ENDIF(NOT EXISTS ${dir})
 ENDFOREACH(dir)
 
-add_executable(scenario1 scenario1.cpp ../src/client.cpp client_behaviors.h)
-add_executable(scenario2 scenario2.cpp ../src/client.cpp client_behaviors.h)
-add_executable(scenario3 scenario3.cpp ../src/client.cpp client_behaviors.h)
+add_executable(scenario1 scenario1.cpp ../src/client.cpp ../src/kv_store_config.cpp)
+add_executable(scenario2 scenario2.cpp ../src/client.cpp ../src/kv_store_config.cpp)
+add_executable(scenario3 scenario3.cpp ../src/client.cpp ../src/kv_store_config.cpp)
 
 add_test(NAME sc1 COMMAND scenario1)
 

@@ -38,7 +38,7 @@ void server::handle_accept(request_session::pointer new_connection, const asio::
 int main() {
     try {
         asio::io_context io_context;
-        server server(io_context, 1313);
+        server server(io_context, kv_store_config::PORT);
         io_context.run();
     }
     catch (std::exception &e) {

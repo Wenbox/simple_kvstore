@@ -57,7 +57,12 @@ void request_session::do_read_body(char tag) {
                                         if (!ec && sz == kv_store_config::KEY_SIZE + kv_store_config::VALUE_SIZE) {
                                             std::string key(m_buffer, kv_store_config::KEY_SIZE);
                                             std::string value(m_buffer + kv_store_config::KEY_SIZE, kv_store_config::VALUE_SIZE);
-                                            m_store.put(key, value);
+                                            try {
+                                                m_store.put(key, value);
+                                            } catch (...) {
+                                                std::cerr << "Error, unable to log\n";
+                                                reply(message_tag::ERROR);
+                                            }
                                             reply(message_tag::OK);
                                         } else if(!ec){
                                             reply(message_tag::ILLEGAL_PARA);
@@ -71,7 +76,12 @@ void request_session::do_read_body(char tag) {
                                     [this, self](asio::error_code ec, std::size_t sz) {
                                         if (!ec && sz == kv_store_config::KEY_SIZE) {
                                             std::string key(m_buffer, kv_store_config::KEY_SIZE);
-                                            m_store.erase(key);
+                                            try {
+                                                m_store.erase(key);
+                                            } catch (...) {
+                                                std::cerr << "Error, unable to log\n";
+                                                reply(message_tag::ERROR);
+                                            }
                                             reply(message_tag::OK);
                                         } else if(!ec){
                                             reply(message_tag::ILLEGAL_PARA);

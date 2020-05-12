@@ -9,7 +9,7 @@
 #include "stopwatch.h"
 
 void run_testcase_1(std::string &host) {
-    client c(host, "1313");
+    client c(host, std::to_string(kv_store_config::PORT));
     int num_of_keys = 10000;
     stopwatch timer;
     //construct key sets for test

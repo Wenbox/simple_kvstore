@@ -11,9 +11,10 @@
 #include "client.h"
 #include "stopwatch.h"
 #include "message_tag.h"
+#include "kv_store_config.h"
 
 void benign_client(std::string &host, int id, double &time_elapsed) {
-    client c(host, "1313");
+    client c(host, std::to_string(kv_store_config::PORT));
     int num_of_keys = 10000;
     stopwatch timer;
     //construct key sets for test
@@ -111,7 +112,7 @@ void connect_and_block(std::string &host, int id) {
     std::cout << id << " holds connection\n";
     asio::io_context io_context;
     tcp::resolver resolver(io_context);
-    tcp::resolver::results_type endpoints = resolver.resolve(host, "1313");
+    tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(kv_store_config::PORT));
     tcp::socket socket(io_context);
     asio::connect(socket, endpoints);
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -122,7 +123,7 @@ void send_faulty(std::string &host, int id) {
 
     asio::io_context io_context;
     tcp::resolver resolver(io_context);
-    tcp::resolver::results_type endpoints = resolver.resolve(host, "1313");
+    tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(kv_store_config::PORT));
     tcp::socket socket(io_context);
     asio::connect(socket, endpoints);
 
